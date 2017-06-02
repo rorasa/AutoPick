@@ -35,6 +35,9 @@ i = 0
 for subdir,dirs,files in os.walk(rootdir):
    for f in files:
        filename = os.path.join(subdir,f)
+       if not(filename.lower().endswith(('.png','.jpg','.jpeg','.bmp','.tif'))):
+              continue
+       
        filelist.append(filename)
 
        img = Image.open(filename)
