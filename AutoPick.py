@@ -7,11 +7,15 @@ from kivy.uix.popup import Popup
 from kivy.uix.progressbar import ProgressBar
 
 from PIL import Image
+from PIL import ImageColor
 from sklearn.cluster import KMeans
 import numpy as np
 
 import os, os.path
 import time
+from random import choice
+
+collage_size = 1024
 
 def gatherValidFiles(path):
     filelist = []
@@ -57,10 +61,58 @@ def createGroups(filelist,labels, total_groups):
 
     return groups
 
-#def makeCollage(groups, layout):
-    
+def makeCollage(groups, layout):
+    imagelist = []
+    for group in groups:
+        f = choice(group)
+        imagelist.append(f)
+        
+    collage = Image.new('RGB', (collage_size,collage_size), color='#ffffff')
 
+    if(layout==2):
+        height = 476
+        width = 976
+        box = [(24,24),(24,524)]
+    elif(layout==3):
+        height = 309
+        width = 976
+        box = [(24,24),(24,357),(24,690)]
+    elif(layout==4):
+        height = 476
+        width = 476
+        box = [(24,24),(524,24),(24,524),(524,524)]
+    elif(layout==6):
+        height = 309
+        width = 476
+        box = [(24,24),(524,24),(24,357),(524,357),(24,690),(524,690)]
+    elif(layout==9):
+        height = 309
+        width = 309
+        box = [(24,24),(357,24),(690,24),(24,357),(357,357),(690,357),(24,690),(357,690),(690,690)]
+        
 
+    for i in range(0,layout):
+        f = imagelist[i]
+        img = Image.open(f)
+        img.thumbnail((max(width,height),max(width,height)))
+        
+        half_width = img.size[0]/2
+        half_height = img.size[1]/2
+        img = img.crop((half_width - (width/2),half_height - (height/2), half_width + (width/2), half_height + (height/2)))
+        
+        collage.paste(img, box[i])
+                        
+    collage.show()
+        
+        
+        
+
+    #for i in range(0,layout):
+    ##    img = Image.open(imagelist[i])
+    #    img.thumbnail((collage_size,collage_size))
+        
+    #    img.show()
+        
 class MainWindow(FloatLayout):
     ''' Controller class for the GUI handlers of the main GUI window
     '''
@@ -92,7 +144,8 @@ class MainWindow(FloatLayout):
     def startClustering(self):
         self.labels = doClustering(self.histograms, self.layout)        
         self.groups = createGroups(self.filelist, self.labels, self.layout)
-        print(self.groups)
+
+        makeCollage(self.groups,self.layout)
         
     def dismiss_popup(self):
         self._popup.dismiss()
