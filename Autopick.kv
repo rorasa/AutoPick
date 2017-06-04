@@ -3,14 +3,20 @@
     label_total_images: label_total_images_id
     label_est_time: label_est_time_id
     layout_image: layout_image_id
+    main_view: main_view_id
 
     GridLayout:
         cols:2
-        padding: 20
+        padding: 10
+        spacing: 10
 
-        Label:
-            id: label_1_id
-            text: 'Label 1'
+        BoxLayout:
+            size_hint: (0.9,0.9)
+            id: main_view_id
+            Image:
+                source: 'intro.png'
+                allow_stretch: True
+
             
         BoxLayout:
             size_hint_x: None

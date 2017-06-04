@@ -1,9 +1,11 @@
 import kivy
 from kivy.app import App
+from kivy.cache import Cache
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.popup import Popup
+from kivy.uix.image import Image as KImage
 from kivy.uix.progressbar import ProgressBar
 
 from PIL import Image
@@ -102,16 +104,8 @@ def makeCollage(groups, layout):
         
         collage.paste(img, box[i])
                         
-    collage.show()
-        
-        
-        
-
-    #for i in range(0,layout):
-    ##    img = Image.open(imagelist[i])
-    #    img.thumbnail((collage_size,collage_size))
-        
-    #    img.show()
+    #collage.show()
+    return collage
         
 class MainWindow(FloatLayout):
     ''' Controller class for the GUI handlers of the main GUI window
@@ -123,8 +117,11 @@ class MainWindow(FloatLayout):
     label_total_images = ObjectProperty()
     label_est_time = ObjectProperty()
     layout_image = ObjectProperty()
+    main_view = ObjectProperty()
 
     layout = 4;
+
+    collage = Image.new('RGB',(1024,1024))
     
     def newProject(self):
         ''' Open a dialog to choose the project folder,
@@ -145,7 +142,18 @@ class MainWindow(FloatLayout):
         self.labels = doClustering(self.histograms, self.layout)        
         self.groups = createGroups(self.filelist, self.labels, self.layout)
 
-        makeCollage(self.groups,self.layout)
+        self.collage = makeCollage(self.groups,self.layout)
+        self.collage.save(os.path.join(self.path,'collage.jpg'),'JPEG')
+
+        self.main_view.clear_widgets()
+        Cache.remove('kv.image')
+        Cache.remove('kv.texture')
+        
+        image = KImage(source=os.path.join(self.path,'collage.jpg'))
+        self.main_view.add_widget(image)
+
+        os.remove(os.path.join(self.path,'collage.jpg'))
+
         
     def dismiss_popup(self):
         self._popup.dismiss()
