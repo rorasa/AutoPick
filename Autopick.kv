@@ -86,3 +86,24 @@
                 height: 50
                 text: 'Save the collage'
                 on_press: root.saveCollage()
+
+<OpenDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: 'vertical'
+        FileChooserIconView:
+            id: filechooser
+            path: root.home_dir()
+            filters: [root.is_dir]
+
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            Button:
+                text: 'Cancel'
+                on_release: root.cancel()
+
+            Button:
+                text: 'Open'
+                on_release: root.select(filechooser.path, filechooser.selection)
