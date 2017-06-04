@@ -57,6 +57,10 @@ def createGroups(filelist,labels, total_groups):
 
     return groups
 
+#def makeCollage(groups, layout):
+    
+
+
 class MainWindow(FloatLayout):
     ''' Controller class for the GUI handlers of the main GUI window
     '''
@@ -66,6 +70,9 @@ class MainWindow(FloatLayout):
     label_folder_name = ObjectProperty()
     label_total_images = ObjectProperty()
     label_est_time = ObjectProperty()
+    layout_image = ObjectProperty()
+
+    layout = 4;
     
     def newProject(self):
         ''' Open a dialog to choose the project folder,
@@ -83,12 +90,24 @@ class MainWindow(FloatLayout):
         self.histograms = getHistograms(self.filelist)
 
     def startClustering(self):
-        self.labels = doClustering(self.histograms, 2)        
-        self.groups = createGroups(self.filelist, self.labels, 2)
+        self.labels = doClustering(self.histograms, self.layout)        
+        self.groups = createGroups(self.filelist, self.labels, self.layout)
         print(self.groups)
         
     def dismiss_popup(self):
         self._popup.dismiss()
+
+    def chooseLayout(self):
+        content = ChooseLayout(getLayout=self.getLayout)
+        self._popup = Popup(title='Choose collage layout', content=content, size_hint=(0.9,0.5))
+        self._popup.open()
+
+    def getLayout(self,layout_id):
+        self.layout = layout_id
+
+        self.layout_image.source = 'group'+str(layout_id)+'.png'
+
+        self.dismiss_popup()
 
     def load(self,path,filename):
         ''' Read the path from argument, compute its statistic and update the UI
@@ -121,7 +140,9 @@ class OpenDialog(FloatLayout):
         return os.path.isdir(os.path.join(path,filename))
     def home_dir(self):
         return os.path.expanduser('~')
-    
+
+class ChooseLayout(FloatLayout):
+    getLayout = ObjectProperty(None)
 
 class AutoPick(App):
 

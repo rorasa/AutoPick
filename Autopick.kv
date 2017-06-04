@@ -1,9 +1,8 @@
 <MainWindow>:
-    label_1: label_1_id
-    label_2: label_2_id
     label_folder_name: label_folder_name_id
     label_total_images: label_total_images_id
     label_est_time: label_est_time_id
+    layout_image: layout_image_id
 
     GridLayout:
         cols:2
@@ -23,7 +22,7 @@
                 size_hint_y: None
                 height: 50
                 text: 'Open new project'
-                on_press: root.newProject()
+                on_release: root.newProject()
 
             BoxLayout:
                 orientation: 'vertical'
@@ -60,7 +59,7 @@
                     size_hint_y: None
                     height: 50
                     text: 'Analyse photos'
-                    on_press: root.startAnalysis()
+                    on_release: root.startAnalysis()
 
             BoxLayout:
                 orientation: 'vertical'
@@ -73,10 +72,13 @@
                         size: self.size
 
                 BoxLayout:
-                    Label:
-                        size_hint_x: 0.3
-                        id: label_2_id
-                        text: 'Number of groups: '
+                    Image:
+                        id: layout_image_id
+                        source: 'group4.png'
+                        allow_stretch: True
+                    Button:
+                        text: 'Choose Layout'
+                        on_release: root.chooseLayout()
 
                 Button:
                     size_hint_y: None
@@ -88,7 +90,7 @@
                 size_hint_y: None
                 height: 50
                 text: 'Save the collage'
-                on_press: root.saveCollage()
+                on_release: root.saveCollage()
 
 <OpenDialog>:
     BoxLayout:
@@ -110,3 +112,49 @@
             Button:
                 text: 'Open'
                 on_release: root.select(filechooser.path, filechooser.selection)
+
+<ChooseLayout>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        Button:
+            on_release: root.getLayout(2)
+            Image:
+                source: 'group2.png'
+                x: self.parent.x + 0.1*self.parent.width 
+                y: self.parent.y + self.parent.height-1.1*self.parent.width
+                size: 0.8*self.parent.width, 0.8*self.parent.width
+                allow_stretch: True
+                
+        Button:
+            on_release: root.getLayout(3)
+            Image:
+                source: 'group3.png'
+                x: self.parent.x + 0.1*self.parent.width 
+                y: self.parent.y + self.parent.height-1.1*self.parent.width
+                size: 0.8*self.parent.width, 0.8*self.parent.width
+                allow_stretch: True
+        Button:
+            on_release: root.getLayout(4)
+            Image:
+                source: 'group4.png'
+                x: self.parent.x + 0.1*self.parent.width 
+                y: self.parent.y + self.parent.height-1.1*self.parent.width
+                size: 0.8*self.parent.width, 0.8*self.parent.width
+                allow_stretch: True
+        Button:
+            on_release: root.getLayout(6)
+            Image:
+                source: 'group6.png'
+                x: self.parent.x + 0.1*self.parent.width 
+                y: self.parent.y + self.parent.height-1.1*self.parent.width
+                size: 0.8*self.parent.width, 0.8*self.parent.width
+                allow_stretch: True
+        Button:
+            on_release: root.getLayout(9)
+            Image:
+                source: 'group9.png'
+                x: self.parent.x + 0.1*self.parent.width 
+                y: self.parent.y + self.parent.height-1.1*self.parent.width
+                size: 0.8*self.parent.width, 0.8*self.parent.width
+                allow_stretch: True
