@@ -133,7 +133,9 @@ class MainWindow(FloatLayout):
         self._popup.open()
 
     def saveCollage(self):
-        print('clicked - Save Collage')
+        content = SaveDialog(save=self.save, cancel=self.dismiss_popup)
+        self._popup = Popup(title='Save as', content=content, size_hint=(0.9,0.9))
+        self._popup.open()
 
     def startAnalysis(self):
         self.histograms = getHistograms(self.filelist)
@@ -193,12 +195,27 @@ class MainWindow(FloatLayout):
 
         self.dismiss_popup()
 
+    def save(self, path, filename):
+        print('Saving to '+os.path.join(path,filename))
+
+        self.collage.save(os.path.join(path,filename))
+
+        self.dismiss_popup()
+
 class OpenDialog(FloatLayout):
     select = ObjectProperty(None)
     cancel = ObjectProperty(None)
 
     def is_dir(self, path, filename):
         return os.path.isdir(os.path.join(path,filename))
+    def home_dir(self):
+        return os.path.expanduser('~')
+
+class SaveDialog(FloatLayout):
+    save = ObjectProperty(None)
+    text_input = ObjectProperty(None)
+    cancel = ObjectProperty(None)
+
     def home_dir(self):
         return os.path.expanduser('~')
 

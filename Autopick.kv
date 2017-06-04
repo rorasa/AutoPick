@@ -16,7 +16,6 @@
             Image:
                 source: 'intro.png'
                 allow_stretch: True
-
             
         BoxLayout:
             size_hint_x: None
@@ -118,6 +117,35 @@
             Button:
                 text: 'Open'
                 on_release: root.select(filechooser.path, filechooser.selection)
+
+<SaveDialog>:
+    text_input: text_input_id
+    
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: 'vertical'
+        FileChooserListView:
+            id: filechooser
+            path: root.home_dir()
+            on_selection: text_input.text = self.selection and self.selection[0] or ''
+
+        TextInput:
+            id: text_input_id
+            size_hint_y: None
+            height: 50
+            multiline: False
+
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            Button:
+                text: 'Cancel'
+                on_release: root.cancel()
+
+            Button:
+                text: 'Save'
+                on_release: root.save(filechooser.path, text_input_id.text)
 
 <ChooseLayout>:
     BoxLayout:
