@@ -4,8 +4,11 @@ from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.popup import Popup
+from kivy.uix.progressbar import ProgressBar
 
 from PIL import Image
+from sklearn.cluster import KMeans
+import numpy as np
 
 import os, os.path
 import time
@@ -19,6 +22,40 @@ def gatherValidFiles(path):
                     filelist.append(os.path.join(path,f))
         
     return filelist
+
+def getHistograms(filelist):
+    hist = []
+
+    # create histogram for each photo
+    for f in filelist:
+        print('Analysing: '+f)
+        img = Image.open(f)
+        h = img.histogram()
+        hist.append(np.array(h))
+
+    hist = np.stack(hist)
+    print('Finished')
+    return hist
+
+def doClustering(hist,no_clusters):
+    # perform KMeans clustering
+    print('Clustering data')
+    kmeans = KMeans(n_clusters=no_clusters).fit(hist)
+    labels = kmeans.labels_
+
+    print('Finished')
+
+    return labels
+
+def createGroups(filelist,labels, total_groups):
+    groups = []
+    for i in range(0, total_groups):
+        groups.append(list())
+
+    for i in range(0,len(filelist)):
+        groups[labels[i]].append(filelist[i])
+
+    return groups
 
 class MainWindow(FloatLayout):
     ''' Controller class for the GUI handlers of the main GUI window
@@ -43,8 +80,13 @@ class MainWindow(FloatLayout):
         print('clicked - Save Collage')
 
     def startAnalysis(self):
-        print('clicked - Start Analysis')
+        self.histograms = getHistograms(self.filelist)
 
+    def startClustering(self):
+        self.labels = doClustering(self.histograms, 2)        
+        self.groups = createGroups(self.filelist, self.labels, 2)
+        print(self.groups)
+        
     def dismiss_popup(self):
         self._popup.dismiss()
 

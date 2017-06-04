@@ -78,11 +78,11 @@
                         id: label_2_id
                         text: 'Number of groups: '
 
-                BoxLayout:
-                    Label:
-                        size_hint_x: 0.3
-                        id: label_3_id
-                        text: 'Unknown'
+                Button:
+                    size_hint_y: None
+                    height: 50
+                    text: 'Make collage'
+                    on_release: root.startClustering()
 
             Button:
                 size_hint_y: None
