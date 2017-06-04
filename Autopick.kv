@@ -1,0 +1,88 @@
+<MainWindow>:
+    label_1: label_1_id
+    label_2: label_2_id
+
+    GridLayout:
+        cols:2
+        padding: 20
+
+        Label:
+            id: label_1_id
+            text: 'Label 1'
+            
+        BoxLayout:
+            size_hint_x: None
+            width: 250
+            orientation: 'vertical'
+            spacing: 5
+
+            Button:
+                size_hint_y: None
+                height: 50
+                text: 'Open new project'
+                on_press: root.newProject()
+
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: 5
+                size_hint_y: 2
+                canvas.before:
+                    Color:
+                        rgba: 0.3, 0.27, 0.27, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                Label:
+                    text: 'Project folder:'
+                Label:
+                    id: label_folder_name_id
+                    text: 'Folder_name'
+                Label:
+                    text: 'Total images:'
+                Label:
+                    id: label_total_images_id
+                    text: 'Total_images'
+                Label:
+                    text: 'Estimated time to analyse:'
+                Label:
+                    id: label_est_time_id
+                    text: 'Estimated_time'
+                Label:
+                    text: 'Number of groups:'
+                TextInput:
+                    text: '5'
+                    multiline: False
+                Button:
+                    size_hint_y: None
+                    height: 50
+                    text: 'Analyse photos'
+                    on_press: root.startAnalysis()
+
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: 5
+                canvas.before:
+                    Color:
+                        rgba: 0.3, 0.27, 0.27, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                BoxLayout:
+                    Label:
+                        size_hint_x: 0.3
+                        id: label_2_id
+                        text: 'Number of groups: '
+
+                BoxLayout:
+                    Label:
+                        size_hint_x: 0.3
+                        id: label_3_id
+                        text: 'Unknown'
+
+            Button:
+                size_hint_y: None
+                height: 50
+                text: 'Save the collage'
+                on_press: root.saveCollage()
