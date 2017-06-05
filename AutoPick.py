@@ -78,6 +78,10 @@ def makeCollage(groups, layout):
         height = 309
         width = 309
         box = [(24,24),(357,24),(690,24),(24,357),(357,357),(690,357),(24,690),(357,690),(690,690)]
+    elif(layout==1):
+        height = 976
+        width = 976
+        box = [(24,24)]
         
 
     for i in range(0,layout):
@@ -98,13 +102,14 @@ class MainWindow(FloatLayout):
     ''' Controller class for the GUI handlers of the main GUI window
     '''
     info = StringProperty()
-    #label_1 = ObjectProperty()
-    #label_2 = ObjectProperty()
     label_folder_name = ObjectProperty()
     label_total_images = ObjectProperty()
     label_est_time = ObjectProperty()
     layout_image = ObjectProperty()
     main_view = ObjectProperty()
+    panel_analysis = ObjectProperty()
+    panel_cluster = ObjectProperty()
+    button_save = ObjectProperty()
     
     layout = 4;
 
@@ -149,10 +154,14 @@ class MainWindow(FloatLayout):
         if not (self.currentFile>=len(self.filelist)):
             Clock.schedule_once(self.computeHistogram)
         else:
+            self.panel_cluster.disabled = False
             self.dismiss_popup()
         
     def startClustering(self):
         hist = np.stack(self.histograms)
+
+        if (self.layout>len(self.filelist)):
+            self.layout = 1
         
         self.labels = doClustering(hist, self.layout)        
         self.groups = createGroups(self.filelist, self.labels, self.layout)
@@ -166,6 +175,8 @@ class MainWindow(FloatLayout):
         
         image = KImage(source=os.path.join(self.path,'collage.jpg'))
         self.main_view.add_widget(image)
+
+        self.button_save.disabled = False
 
         os.remove(os.path.join(self.path,'collage.jpg'))
         
@@ -204,6 +215,7 @@ class MainWindow(FloatLayout):
         self.label_total_images.text = str(len(self.filelist))
         est_time = round(time_taken * len(self.filelist) * 1.1)
         self.label_est_time.text = str(est_time)+' seconds'
+        self.panel_analysis.disabled = False
 
         self.dismiss_popup()
 

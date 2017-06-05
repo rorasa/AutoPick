@@ -4,6 +4,9 @@
     label_est_time: label_est_time_id
     layout_image: layout_image_id
     main_view: main_view_id
+    panel_analysis: panel_analysis_id
+    panel_cluster: panel_cluster_id
+    button_save: button_save_id
 
     GridLayout:
         cols:2
@@ -30,6 +33,8 @@
                 on_release: root.newProject()
 
             BoxLayout:
+                id: panel_analysis_id
+                disabled: True
                 orientation: 'vertical'
                 spacing: 5
                 size_hint_y: 2
@@ -44,22 +49,17 @@
                     text: 'Project folder:'
                 Label:
                     id: label_folder_name_id
-                    text: 'Folder_name'
+                    text: 'Not loaded'
                 Label:
                     text: 'Total images:'
                 Label:
                     id: label_total_images_id
-                    text: 'Total_images'
+                    text: '-'
                 Label:
                     text: 'Estimated time to analyse:'
                 Label:
                     id: label_est_time_id
-                    text: 'Estimated_time'
-                Label:
-                    text: 'Number of groups:'
-                TextInput:
-                    text: '5'
-                    multiline: False
+                    text: 'N/A'
                 Button:
                     size_hint_y: None
                     height: 50
@@ -67,6 +67,8 @@
                     on_release: root.startAnalysis()
 
             BoxLayout:
+                id: panel_cluster_id
+                disabled: True
                 orientation: 'vertical'
                 spacing: 5
                 canvas.before:
@@ -92,6 +94,8 @@
                     on_release: root.startClustering()
 
             Button:
+                id: button_save_id
+                disabled: True
                 size_hint_y: None
                 height: 50
                 text: 'Save the collage'
