@@ -147,6 +147,18 @@
                 text: 'Save'
                 on_release: root.save(filechooser.path, text_input_id.text)
 
+<ProgressDialog>:
+    progress_bar: progress_bar_id
+
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: 'vertical'
+        ProgressBar:
+            id: progress_bar_id
+            max: 10
+            value: 0
+
 <ChooseLayout>:
     BoxLayout:
         size: root.size

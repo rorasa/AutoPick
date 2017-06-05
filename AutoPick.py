@@ -1,6 +1,7 @@
 import kivy
 from kivy.app import App
 from kivy.cache import Cache
+from kivy.clock import Clock
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty, StringProperty
@@ -28,20 +29,6 @@ def gatherValidFiles(path):
                     filelist.append(os.path.join(path,f))
         
     return filelist
-
-def getHistograms(filelist):
-    hist = []
-
-    # create histogram for each photo
-    for f in filelist:
-        print('Analysing: '+f)
-        img = Image.open(f)
-        h = img.histogram()
-        hist.append(np.array(h))
-
-    hist = np.stack(hist)
-    print('Finished')
-    return hist
 
 def doClustering(hist,no_clusters):
     # perform KMeans clustering
@@ -118,7 +105,7 @@ class MainWindow(FloatLayout):
     label_est_time = ObjectProperty()
     layout_image = ObjectProperty()
     main_view = ObjectProperty()
-
+    
     layout = 4;
 
     collage = Image.new('RGB',(1024,1024))
@@ -138,10 +125,36 @@ class MainWindow(FloatLayout):
         self._popup.open()
 
     def startAnalysis(self):
-        self.histograms = getHistograms(self.filelist)
+        self.progress_bar = ProgressDialog()
+        self._popup = Popup(title='Analysing', content=self.progress_bar, size_hint=(0.9,0.5))
+        self._popup.open()
+        self.progress_bar.setMax(len(self.filelist))
 
+        self.currentFile = 0
+        self.histograms = []
+
+        Clock.schedule_once(self.computeHistogram)
+        
+    def computeHistogram(self,dt):
+        # create histogram for each photo
+        f = self.filelist[self.currentFile]
+        print('Analysing: '+ f)
+        self.progress_bar.updateProgress(self.currentFile)
+        
+        img = Image.open(f)
+        h = img.histogram()
+        self.histograms.append(np.array(h))
+
+        self.currentFile += 1
+        if not (self.currentFile>=len(self.filelist)):
+            Clock.schedule_once(self.computeHistogram)
+        else:
+            self.dismiss_popup()
+        
     def startClustering(self):
-        self.labels = doClustering(self.histograms, self.layout)        
+        hist = np.stack(self.histograms)
+        
+        self.labels = doClustering(hist, self.layout)        
         self.groups = createGroups(self.filelist, self.labels, self.layout)
 
         self.collage = makeCollage(self.groups,self.layout)
@@ -155,7 +168,6 @@ class MainWindow(FloatLayout):
         self.main_view.add_widget(image)
 
         os.remove(os.path.join(self.path,'collage.jpg'))
-
         
     def dismiss_popup(self):
         self._popup.dismiss()
@@ -218,6 +230,17 @@ class SaveDialog(FloatLayout):
 
     def home_dir(self):
         return os.path.expanduser('~')
+    
+class ProgressDialog(FloatLayout):
+    update = ObjectProperty(None)
+    progress_bar = ObjectProperty(None)
+
+    def updateProgress(self,value):
+        self.progress_bar.value = value
+        self.progress_bar.canvas.ask_update()
+
+    def setMax(self, value):
+        self.progress_bar.max = value
 
 class ChooseLayout(FloatLayout):
     getLayout = ObjectProperty(None)
