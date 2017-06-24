@@ -11,8 +11,10 @@ from kivy.uix.progressbar import ProgressBar
 
 from PIL import Image
 from PIL import ImageColor
+from PIL import ExifTags
 from sklearn.cluster import KMeans
 import numpy as np
+from math import floor
 
 import os, os.path
 import time
@@ -83,17 +85,48 @@ def makeCollage(groups, layout):
         width = 976
         box = [(24,24)]
         
-
     for i in range(0,layout):
         f = imagelist[i]
         img = Image.open(f)
-        img.thumbnail((max(width,height),max(width,height)))
+
+        # check ExifTags to correct image orientation
+        for orientation in ExifTags.TAGS.keys():
+            if ExifTags.TAGS[orientation] == 'Orientation':
+                break
+        exif = dict(img._getexif().items())
+
+        if exif[orientation] == 3:
+            img = img.rotate(180, expand=True)
+        elif exif[orientation] == 6:
+            img = img.rotate(270, expand=True)
+        elif exif[orientation] == 8:
+            img = img.rotate(90, expand=True)
+
+        # scale down the image to appropriate size
+        if img.width >= img.height:
+            if width > height:
+                scale = width/img.width
+            else:
+                scale = height/img.height
+        else:
+            scale = width/img.width
+
+        img_scaled = img.resize((floor(img.width*scale),floor(img.height*scale)))
+
+        # crop image according to the layout
+        left = floor((img_scaled.width-width)/2)
+        upper = floor((img_scaled.height-height)/2)
+        right = floor(img_scaled.width-((img_scaled.width-width)/2))
+        lower = floor(img_scaled.height-((img_scaled.height-height)/2))
+
+        print((width,height))
+        print((img.width,img.height))
+        print((img_scaled.width,img_scaled.height))
+        print((left,upper,right,lower))
+
+        img_cropped = img_scaled.copy().crop((left,upper,right,lower))
         
-        half_width = img.size[0]/2
-        half_height = img.size[1]/2
-        img = img.crop((half_width - (width/2),half_height - (height/2), half_width + (width/2), half_height + (height/2)))
-        
-        collage.paste(img, box[i])
+        collage.paste(img_cropped, box[i])
                         
     #collage.show()
     return collage
